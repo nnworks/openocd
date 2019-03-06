@@ -1437,7 +1437,7 @@ static int gdb_read_memory_packet(struct connection *connection,
 
 	if (!len) {
 		LOG_WARNING("invalid read memory packet received (len == 0)");
-		gdb_put_packet(connection, NULL, 0);
+		gdb_put_packet(connection, "", 0);
 		return ERROR_OK;
 	}
 
@@ -2850,7 +2850,7 @@ static bool gdb_handle_vcont_packet(struct connection *connection, const char *p
 			if (gdb_connection->sync) {
 				gdb_connection->sync = false;
 				if (ct->state == TARGET_HALTED) {
-					LOG_WARNING("stepi ignored. GDB will now fetch the register state " \
+					LOG_DEBUG("stepi ignored. GDB will now fetch the register state " \
 									"from the target.");
 					gdb_sig_halted(connection);
 					log_remove_callback(gdb_log_callback, connection);
@@ -3234,7 +3234,7 @@ static int gdb_input_inner(struct connection *connection)
 						 * make only the single stepping have the sync feature...
 						 */
 						nostep = true;
-						LOG_WARNING("stepi ignored. GDB will now fetch the register state " \
+						LOG_DEBUG("stepi ignored. GDB will now fetch the register state " \
 								"from the target.");
 					}
 					gdb_con->sync = false;
@@ -3337,7 +3337,7 @@ static int gdb_input_inner(struct connection *connection)
 				default:
 					/* ignore unknown packets */
 					LOG_DEBUG("ignoring 0x%2.2x packet", packet[0]);
-					gdb_put_packet(connection, NULL, 0);
+					gdb_put_packet(connection, "", 0);
 					break;
 			}
 
