@@ -584,7 +584,7 @@ static int xtensa_resume(
   uint8_t buf[4];
   int res;
 
-  LOG_DEBUG("%s current=%d address=%04l" PRIx32, __func__, current, address);
+  LOG_DEBUG("%s current=%d address=" TARGET_ADDR_FMT, __func__, current, address);
 
   if (target->state != TARGET_HALTED) {
     LOG_WARNING("%s: target not halted", __func__);
@@ -639,7 +639,7 @@ static int xtensa_step(struct target *target,
     return ERROR_TARGET_NOT_HALTED;
   }
 
-  LOG_DEBUG("%s current=%d address=%l"PRIx32, __func__, current, address);
+  LOG_DEBUG("%s current=%d address=" TARGET_ADDR_FMT, __func__, current, address);
 
   /* Load debug level into ICOUNTLEVEL
 
@@ -894,11 +894,11 @@ static int xtensa_read_memory(struct target *target,
      most this size.
   */
   while(count > 255) {
-    LOG_DEBUG("%s: splitting read from 0x%l" PRIx32 " size %d count 255",__func__,
+    LOG_DEBUG("%s: splitting read from 0x" TARGET_ADDR_FMT " size %d count 255",__func__,
         address,size);
     res = xtensa_read_memory_inner(target, address, size, 255, buffer);
     if(res != ERROR_OK) {
-      LOG_ERROR("%s: inner read failed at address 0x%l" PRIx32, __func__, address);
+      LOG_ERROR("%s: inner read failed at address 0x" TARGET_ADDR_FMT, __func__, address);
       return res;
     }
     count -= 255;
@@ -907,7 +907,7 @@ static int xtensa_read_memory(struct target *target,
   }
   res = xtensa_read_memory_inner(target, address, size, count, buffer);
   if(res != ERROR_OK) {
-    LOG_ERROR("%s: final read failed at address 0x%l" PRIx32, __func__, address);
+    LOG_ERROR("%s: final read failed at address 0x" TARGET_ADDR_FMT, __func__, address);
   }
 
   return res;
@@ -994,11 +994,11 @@ static int xtensa_write_memory(struct target *target,
      most this size.
   */
   while(count > 255) {
-    LOG_DEBUG("%s: splitting read from 0x%l" PRIx32 " size %d count 255",__func__,
+    LOG_DEBUG("%s: splitting read from 0x" TARGET_ADDR_FMT " size %d count 255",__func__,
         address,size);
     res = xtensa_write_memory_inner(target, address, size, 255, buffer);
     if(res != ERROR_OK) {
-      LOG_ERROR("%s: inner write failed at address 0x%l" PRIx32, __func__, address);
+      LOG_ERROR("%s: inner write failed at address 0x" TARGET_ADDR_FMT, __func__, address);
 
       return res;
     }
@@ -1008,7 +1008,7 @@ static int xtensa_write_memory(struct target *target,
   }
   res = xtensa_write_memory_inner(target, address, size, count, buffer);
   if(res != ERROR_OK) {
-    LOG_ERROR("%s: final write failed at address 0x%l" PRIx32, __func__, address);
+    LOG_ERROR("%s: final write failed at address 0x" TARGET_ADDR_FMT, __func__, address);
   }
 
   /* NB: if we were supporting the ICACHE option, we would need
@@ -1037,8 +1037,7 @@ static int xtensa_read_buffer(struct target *target,
   else
     aligned_buffer = buffer;
 
-  LOG_DEBUG("%s: aligned_address=0x%" PRIx32 " aligned_count=0x%"
-      PRIx32, __func__, aligned_address, aligned_count);
+  LOG_DEBUG("%s: aligned_address=0x%" PRIx32 " aligned_count=0x%" PRIx32, __func__, aligned_address, aligned_count);
 
   res = xtensa_read_memory(target, aligned_address,
          4, aligned_count/4,
@@ -1088,7 +1087,7 @@ static int xtensa_write_buffer(struct target *target,
     buffer = aligned_buffer;
   }
 
-  LOG_DEBUG("%s: aligned_address=0x%l" PRIx32 " aligned_count=0x%"
+  LOG_DEBUG("%s: aligned_address=0x" TARGET_ADDR_FMT " aligned_count=0x%"
       PRIx32, __func__, aligned_address, aligned_count);
 
   res = xtensa_write_memory(target, aligned_address,
@@ -1174,7 +1173,7 @@ static int xtensa_add_breakpoint(struct target *target, struct breakpoint *break
       return res;
 
     breakpoint->type = BKPT_HARD;
-    LOG_WARNING("Cannot set a software breakpoint at 0x%lu. Trying a hardware one instead...", breakpoint->address);
+    LOG_WARNING("Cannot set a software breakpoint at 0x" TARGET_ADDR_FMT ". Trying a hardware one instead...", breakpoint->address);
   }
 
   if (!xtensa->free_brps) {
